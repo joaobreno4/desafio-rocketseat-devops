@@ -1,42 +1,45 @@
 AWS AppRunner Infrastructure (IaC & CI/CD)
-Infraestrutura como Código (IaC) para provisionamento automatizado de serviços na AWS utilizando Terraform e GitHub Actions.
+Este projeto demonstra a automação completa de infraestrutura na AWS utilizando Terraform para o provisionamento e GitHub Actions para a esteira de CI/CD.
 
-Arquitetura
-A solução utiliza o AWS AppRunner para hospedar aplicações containerizadas com foco em escalabilidade e baixo overhead operacional.
+🚀 Arquitetura e Ambientes
+A solução utiliza o AWS AppRunner para hospedar aplicações containerizadas de forma agnóstica e escalável. A infraestrutura está dividida em dois ambientes distintos para garantir a segurança e o controle de custos:
 
-Modularização: Estrutura baseada em módulos reutilizáveis (DRY).
+Recurso	Ambiente Development (Dev)	Ambiente Production (Prod)
+Instância	0.25 vCPU	1 vCPU
+Memória	0.5 GB	2 GB
+Porta	8080	8080
+Auto-Deploy	Desabilitado (Manual via CI)	Desabilitado (Manual via CI)
+🛠️ Stack Tecnológica
+IaC: Terraform (Modularizado)
 
-Ambientes: Separação lógica entre dev (0.25 vCPU) e prod (1 vCPU).
+Cloud: AWS (AppRunner, IAM, ECR Public)
 
-CI/CD: Pipeline automatizada com estágios de Init, Plan, Apply e Health Check.
+CI/CD: GitHub Actions (Workflows automatizados)
 
-Stack Tecnológica
-IaC: Terraform
+Padrão de Container: OCI Compliant
 
-Cloud: AWS (AppRunner, ECR)
-
-CI/CD: GitHub Actions
-
-Security: GitHub Secrets para gestão de credenciais
-
-Estrutura de Diretórios
+📂 Estrutura de Diretórios
 Plaintext
-├── .github/workflows/ # Pipelines de CI/CD
+├── .github/workflows/
+│   └── deploy.yml      # Pipeline de automação
 ├── terraform/
-│   ├── modules/       # Módulos globais
-│   └── envs/          # Configurações de Dev/Prod
+│   ├── modules/
+│   │   └── app_runner/ # Módulo reutilizável de infra
+│   └── envs/
+│       ├── dev/        # Variáveis e estado de Desenvolvimento
+│       └── prod/       # Variáveis e estado de Produção
 └── README.md
-Implantação
-Configurar AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY no GitHub Secrets.
+⚙️ Como Implantar
+Configure as chaves AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY no GitHub Secrets.
 
-Push para a branch develop (Ambiente de Desenvolvimento).
+Realize o push para a branch main.
 
-Push para a branch main (Ambiente de Produção).
+A pipeline executará automaticamente o Terraform Plan e o Terraform Apply para ambos os ambientes.
 
-📤 Atualizando o GitHub
-Salve o arquivo no nano e rode os comandos:
+📤 Comandos para atualizar o GitHub agora:
+No seu terminal, dentro da pasta do projeto, rode:
 
 Bash
 git add README.md
-git commit -m "docs: finalize professional readme"
+git commit -m "docs: update readme with dev/prod comparison"
 git push origin main
