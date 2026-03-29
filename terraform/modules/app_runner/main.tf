@@ -10,7 +10,7 @@ resource "aws_apprunner_service" "this" {
         port = var.container_port
       }
     }
-    auto_deployments_enabled = true
+    auto_deployments_enabled = false
   }
 
   instance_configuration {
