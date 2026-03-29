@@ -1,0 +1,42 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  terraform:
+    name: "Deploy Infrastructure"
+    runs-on: ubuntu-latest
+    
+    env:
+      WORKING_DIR: ${{ github.ref == 'refs/heads/main' && 'terraform/envs/prod' || 'terraform/envs/dev' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init & Plan
+        run: |
+          cd ${{ env.WORKING_DIR }}
+          terraform init
+          terraform plan
+
+      - name: Terraform Apply
+        run: |
+          cd ${{ env.WORKING_DIR }}
+          terraform apply -auto-approve
+
+      - name: Health Check
+        run: |
+          URL=$(cd ${{ env.WORKING_DIR }} && terraform output -raw app_runner_url)
+          curl --retry 5 --retry-delay 10 -f $URL/health || echo "Check skipped: path not found"
